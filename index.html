@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Services Case Wheel</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const cases = [
+            "the need for home care as an elderly individual",
+            "struggles with childcare as a single parent",
+            "homelessness as a youth seeking shelter",
+            "PTSD as a veteran needing counseling",
+            "language barriers as part of an immigrant family",
+            "the need for safe housing as a domestic violence survivor",
+            "employment challenges as an individual with disabilities",
+            "food insecurity as part of a low-income family",
+            "substance abuse issues and seeking treatment",
+            "being in the foster care system as a child",
+            "unemployment and the need for job training",
+            "elder abuse as a senior citizen",
+            "mental health issues as a teenager",
+            "reintegration challenges as an ex-offender",
+            "the threat of eviction as a family",
+            "healthcare needs due to a chronic illness",
+            "the need for support services as an LGBTQ+ youth",
+            "adjustment challenges as part of a refugee family",
+            "the need for day programs as a person with developmental disabilities",
+            "long-term unemployment as a single adult"
+        ];
+
+        function Wheel() {
+            const [selectedCase, setSelectedCase] = React.useState(null);
+            const [isSpinning, setIsSpinning] = React.useState(false);
+            const [copied, setCopied] = React.useState(false);
+            const textAreaRef = React.useRef(null);
+
+            const spinWheel = () => {
+                setIsSpinning(true);
+                setTimeout(() => {
+                    const randomIndex = Math.floor(Math.random() * cases.length);
+                    setSelectedCase(cases[randomIndex]);
+                    setIsSpinning(false);
+                }, 2000);
+            };
+
+            const getPrompt = () => {
+                if (!selectedCase) return '';
+                return `Please engage in an interview with me from the perspective of a social services client dealing with ${selectedCase} during the first session. I would like to practice my clinical interviewing skills.`;
+            };
+
+            const copyToClipboard = () => {
+                textAreaRef.current.select();
+                document.execCommand('copy');
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            return (
+                <div className="max-w-md mx-auto bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="p-4">
+                        <h2 className="text-2xl font-bold text-center mb-4">Social Services Case Wheel</h2>
+                        <div className="flex flex-col items-center space-y-4">
+                            <div className="w-64 h-64 rounded-full border-8 border-gray-300 flex items-center justify-center relative overflow-hidden">
+                                {isSpinning ? (
+                                    <div className="animate-spin">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                    </div>
+                                ) : (
+                                    <div className="text-center p-4">
+                                        {selectedCase || "Spin the wheel!"}
+                                    </div>
+                                )}
+                            </div>
+                            <button 
+                                onClick={spinWheel} 
+                                disabled={isSpinning}
+                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50"
+                            >
+                                {isSpinning ? "Spinning..." : "Spin Wheel"}
+                            </button>
+                            <div className="w-full mt-4">
+                                <textarea
+                                    ref={textAreaRef}
+                                    value={getPrompt()}
+                                    readOnly
+                                    className="w-full h-24 p-2 text-sm border rounded resize-none"
+                                />
+                                <div className="flex justify-end mt-2">
+                                    <button 
+                                        onClick={copyToClipboard} 
+                                        disabled={!selectedCase}
+                                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 disabled:opacity-50 flex items-center"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                        Copy
+                                    </button>
+                                </div>
+                            </div>
+                            {copied && (
+                                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                                    <span className="block sm:inline">Prompt copied to clipboard!</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<Wheel />, document.getElementById('root'));
+    </script>
+</body>
+</html>
